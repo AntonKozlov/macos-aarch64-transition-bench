@@ -32,13 +32,38 @@
 package org.openjdk;
 
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.infra.Blackhole;
 
 public class MyBenchmark {
 
+    static {
+        System.loadLibrary("MyBenchmark");
+    }
+    static final Runtime runtime = Runtime.getRuntime();
+
+    static native void jniCall();
+    static native void nativeWX();
+
     @Benchmark
-    public void testMethod() {
-        // This is a demo/sample template for building your JMH benchmarks. Edit as needed.
-        // Put your benchmark code here.
+    public void testNothing() {
+        // no-op
     }
 
+    @Benchmark
+    public void testJNI() {
+        // JNI -> no-op
+        jniCall();
+    }
+
+    @Benchmark
+    public void testTwoStateAndWX() {
+        // JNI -> W^X, VM -> no-op call with -XX:+DisableExplicitGC
+        runtime.gc();
+    }
+
+    @Benchmark
+    public void testWX() {
+        // JNI -> W^X -> no-op
+        nativeWX();
+    }
 }

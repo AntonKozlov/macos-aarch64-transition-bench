@@ -77,7 +77,7 @@ public class MyBenchmark {
 
     @Benchmark
     public void testJniNanoTime(Blackhole bh) {
-        // -> native_wrapper ; JNI -> native method -> gettime
+        // -> native_wrapper ; JNI -> native method -> W^X, gettime
         nativeNanoTime();
     }
 

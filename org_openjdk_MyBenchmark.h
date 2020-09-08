@@ -23,6 +23,14 @@ JNIEXPORT void JNICALL Java_org_openjdk_MyBenchmark_jniCall
 JNIEXPORT void JNICALL Java_org_openjdk_MyBenchmark_nativeWX
   (JNIEnv *, jclass);
 
+/*
+ * Class:     org_openjdk_MyBenchmark
+ * Method:    nativeNanoTime
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_openjdk_MyBenchmark_nativeNanoTime
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif

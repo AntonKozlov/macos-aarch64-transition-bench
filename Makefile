@@ -10,5 +10,8 @@ CFLAGS := -I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/$(JDK_MD_INCLUDE_$(OS))
 libMyBenchmark$(LIBEXT_$(OS)) : libMyBenchmark.o
 	$(CC) -shared -fPIC -L$(JAVA_HOME)/lib/server/ -o $@ $^ -ljvm
 
+h-regen :
+	javac -h . -cp target/benchmarks.jar src/main/java/org/openjdk/MyBenchmark.java
+
 clean :
 	rm -f libMyBenchmark$(LIBEXT_$(OS)) libMyBenchmark.o

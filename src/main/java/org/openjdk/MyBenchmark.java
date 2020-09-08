@@ -32,8 +32,10 @@
 package org.openjdk;
 
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.infra.Blackhole;
 
+@Fork(jvmArgsPrepend = {"-Djava.library.path=."})
 public class MyBenchmark {
 
     static {
@@ -43,6 +45,7 @@ public class MyBenchmark {
 
     static native void jniCall();
     static native void nativeWX();
+    static native void nativeNanoTime();
 
     @Benchmark
     public void testNothing() {
@@ -51,19 +54,36 @@ public class MyBenchmark {
 
     @Benchmark
     public void testJNI() {
-        // JNI -> no-op
+        // -> native_wrapper ; JNI -> native method ; no-op
         jniCall();
     }
 
     @Benchmark
+    public void testWX() {
+        // -> native_wrapper ; JNI -> native method -> W^X ; no-op
+        nativeWX();
+    }
+
+
+    @Benchmark
+    @Fork(jvmArgsPrepend = {
+        "-Djava.library.path=.",
+        "-XX:+DisableExplicitGC",
+    })
     public void testTwoStateAndWX() {
-        // JNI -> W^X, VM -> no-op call with -XX:+DisableExplicitGC
+        // -> native_wrapper ; JNI -> native method -> VM ; W^X ; no-op
         runtime.gc();
     }
 
     @Benchmark
-    public void testWX() {
-        // JNI -> W^X -> no-op
-        nativeWX();
+    public void testJniNanoTime(Blackhole bh) {
+        // -> native_wrapper ; JNI -> native method -> gettime
+        nativeNanoTime();
+    }
+
+    @Benchmark
+    public void testNanoTime(Blackhole bh) {
+        // -> gettime
+        bh.consume(System.nanoTime());
     }
 }

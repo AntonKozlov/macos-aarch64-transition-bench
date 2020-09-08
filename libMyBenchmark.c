@@ -4,6 +4,9 @@
 JNIEXPORT jint JNICALL
 JVM_GetInterfaceVersion(void);
 
+JNIEXPORT jlong JNICALL
+JVM_NanoTime(JNIEnv *env, jclass ignored);
+
 JNIEXPORT void JNICALL Java_org_openjdk_MyBenchmark_jniCall
   (JNIEnv *env, jclass cls)
 {
@@ -13,4 +16,10 @@ JNIEXPORT void JNICALL Java_org_openjdk_MyBenchmark_nativeWX
   (JNIEnv *env, jclass cls)
 {
     JVM_GetInterfaceVersion();
+}
+
+JNIEXPORT void JNICALL Java_org_openjdk_MyBenchmark_nativeNanoTime
+  (JNIEnv *env, jclass cls)
+{
+    JVM_NanoTime(env, cls);
 }

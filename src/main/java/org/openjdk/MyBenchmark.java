@@ -33,19 +33,33 @@ package org.openjdk;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
 @Fork(jvmArgsPrepend = {"-Djava.library.path=."})
+@State(Scope.Benchmark)
 public class MyBenchmark {
-
-    static {
-        System.loadLibrary("MyBenchmark");
+    static class Dummy {
+        int field;
     }
-    static final Runtime runtime = Runtime.getRuntime();
 
     static native void jniCall();
     static native void nativeWX();
     static native void nativeNanoTime();
+
+    static native void nativeInit(Class dummy);
+    static native void nativeTestGetField(Dummy dummy, int loopCnt);
+
+    static Dummy dummy = new Dummy();
+    static final Runtime runtime = Runtime.getRuntime();
+
+    static {
+        System.loadLibrary("MyBenchmark");
+        nativeInit(Dummy.class);
+    }
+
 
     @Benchmark
     public void testNothing() {
@@ -85,5 +99,13 @@ public class MyBenchmark {
     public void testNanoTime(Blackhole bh) {
         // -> gettime
         bh.consume(System.nanoTime());
+    }
+
+    @Param({"1", "10", "100", "1000"})
+    int loopCnt;
+
+    @Benchmark
+    public void testGetField() {
+        nativeTestGetField(dummy, loopCnt);
     }
 }
